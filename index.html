@@ -59,6 +59,25 @@
       margin-left:10px; padding:9px 14px; border:0; border-radius:14px; background:linear-gradient(180deg,#88ff7a,#2fb91b);
       color:#062010; font-weight:900; cursor:pointer; box-shadow:0 4px 0 #187010;
     }
+    .soundBtn{
+      position:absolute;
+      right:10px;
+      top:56px;
+      pointer-events:auto;
+      border:1px solid rgba(83,230,255,.38);
+      background:rgba(3,10,25,.74);
+      color:#eafcff;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:950;
+      cursor:pointer;
+      box-shadow:0 0 16px rgba(83,230,255,.12);
+      backdrop-filter:blur(6px);
+    }
+    .soundBtn.off{
+      border-color:rgba(255,93,122,.45);
+      color:#ffd4dd;
+    }
     .screen{
       position:fixed; inset:0; z-index:10; display:flex; align-items:center; justify-content:center;
       background:radial-gradient(circle at 20% 15%, rgba(112,90,255,.35), transparent 28%), radial-gradient(circle at 80% 25%, rgba(83,230,255,.23), transparent 26%), linear-gradient(180deg,#040918,#071226 62%,#030715);
@@ -206,7 +225,58 @@
     .mobileRescue{position:fixed; right:14px; bottom:24px; z-index:8; display:none; pointer-events:auto}
     .mobileRescue button{border:0; border-radius:22px; padding:16px 18px; font-weight:950; color:#051d2a; background:linear-gradient(180deg,#ffef7d,#ffbd36); box-shadow:0 5px 0 #9a6400}
 
-    .endingThanks{display:none; position:fixed; inset:0; z-index:25; align-items:center; justify-content:center; padding:18px; background:rgba(0,0,0,.42)}
+    .rescueVideoOverlay{
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:24;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,.88);
+      padding:14px;
+    }
+    .rescueVideoBox{
+      width:min(920px,96vw);
+      border-radius:24px;
+      border:1px solid rgba(83,230,255,.45);
+      background:rgba(4,10,25,.96);
+      box-shadow:0 0 36px rgba(83,230,255,.22);
+      padding:10px;
+      text-align:center;
+    }
+    .rescueVideoBox video{
+      width:100%;
+      max-height:76svh;
+      border-radius:18px;
+      background:#000;
+      display:block;
+    }
+    .rescueVideoText{
+      padding:8px 4px 2px;
+      color:#eafcff;
+      font-weight:950;
+      font-size:clamp(16px,3vw,22px);
+    }
+    .skipVideoBtn{
+      margin-top:8px;
+      border:1px solid rgba(255,255,255,.22);
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      border-radius:14px;
+      padding:8px 12px;
+      font-weight:950;
+      cursor:pointer;
+    }
+    .finalVideoOverlay{
+      z-index:25;
+      background:rgba(0,0,0,.92);
+    }
+    .finalVideoText{
+      color:#ffe66d;
+      text-shadow:0 0 16px rgba(255,230,109,.32);
+    }
+
+    .endingThanks{display:none; position:fixed; inset:0; z-index:26; align-items:center; justify-content:center; padding:18px; background:rgba(0,0,0,.42)}
     .thanksCard{width:min(760px,94vw); border-radius:28px; border:1px solid rgba(83,230,255,.45); background:linear-gradient(180deg,rgba(10,22,55,.96),rgba(5,11,27,.98)); text-align:center; padding:24px; box-shadow:0 0 36px rgba(83,230,255,.2)}
     .thanksCard h1{margin:0 0 8px; font-size:clamp(26px,6vw,50px); color:#f8ffff; text-shadow:0 0 18px rgba(83,230,255,.35)}
     .thanksCard p{font-size:clamp(16px,3vw,22px); color:#dff5ff}
@@ -220,6 +290,7 @@
       .badge{padding:7px 8px;font-size:13px;min-height:34px}
       .progressOuter{width:30vw}
       .promptBox{bottom:76px;font-size:14px;padding:10px}
+      .soundBtn{top:48px;right:6px;font-size:12px;padding:7px 9px}
       .missionGrid{grid-template-columns:1fr;gap:8px}
       .missionItem{min-height:54px;padding:8px}
       .card{padding:16px;border-radius:22px}
@@ -286,11 +357,15 @@
       <div class="progressOuter"><div class="progressInner" id="progressInner"></div></div>
     </div>
   </div>
+  <button class="soundBtn" id="soundBtn" type="button">🔊 Ambience On</button>
   <div class="promptBox" id="promptBox">
     <span id="promptText">Alien found!</span>
     <button id="rescueBtn">Answer Question</button>
   </div>
 </div>
+
+<audio id="spaceAmbience" src="https://raw.githubusercontent.com/limkimsze-maker/P3-Uncle-Joe-and-Addition-of-Unlike-Fractions/26fdebdfbc92c85d8f2a367969f3b4f4017c33d8/placidplace-spaceship-ambience-with-effects-21420.mp3" loop preload="auto"></audio>
+<audio id="beamSound" src="https://raw.githubusercontent.com/limkimsze-maker/P3-Uncle-Joe-and-Equivalent-Fractions/4b4ac8a0836a07931dd0ae24e328fc47e4dcba03/yodguard-short-energy-beam-shot-3-482517.mp3" preload="auto"></audio>
 
 <div class="screen" id="startScreen">
   <div class="card">
@@ -381,6 +456,7 @@
 
     <div class="modalActions">
       <button class="smallBtn" id="tryAgainBtn">Try Again</button>
+      <button class="smallBtn" id="cheatSolveBtn">Teacher Cheat Solve</button>
       <button class="nextBtn" id="saveAlienBtn">Beam Up Alien</button>
     </div>
   </div>
@@ -393,6 +469,22 @@
   <button id="downBtn">▼</button>
 </div>
 <div class="mobileRescue" id="mobileRescue"><button id="mobileRescueBtn">Rescue</button></div>
+
+<div class="rescueVideoOverlay" id="rescueVideoOverlay">
+  <div class="rescueVideoBox">
+    <video id="firstRescueVideo" src="https://raw.githubusercontent.com/limkimsze-maker/P3-Uncle-Joe-and-Equivalent-Fractions/c0e24dea3de2cfeaf92b5cec51a7cfd78f0f7455/220638_medium.mp4" preload="auto" playsinline></video>
+    <div class="rescueVideoText">First alien rescued!</div>
+    <button class="skipVideoBtn" id="skipVideoBtn" type="button">Skip video</button>
+  </div>
+</div>
+
+<div class="rescueVideoOverlay finalVideoOverlay" id="finalThanksVideoOverlay">
+  <div class="rescueVideoBox">
+    <video id="finalThanksVideo" src="https://raw.githubusercontent.com/limkimsze-maker/P3-Uncle-Joe-and-Equivalent-Fractions/6615a9e42b09b1fb23fdcc554372cc1497b09e9c/ten_aliens_thanking_uncle_joe.mp4" preload="auto" playsinline></video>
+    <div class="rescueVideoText finalVideoText">All 10 aliens are saved!</div>
+    <button class="skipVideoBtn" id="skipFinalVideoBtn" type="button">Skip video</button>
+  </div>
+</div>
 
 <div class="endingThanks" id="endingThanks">
   <div class="thanksCard">
@@ -427,6 +519,9 @@
 
   const UI = {
     startScreen: document.getElementById('startScreen'), startBtn: document.getElementById('startBtn'),
+    soundBtn: document.getElementById('soundBtn'),
+    spaceAmbience: document.getElementById('spaceAmbience'),
+    beamSound: document.getElementById('beamSound'),
     missionState: document.getElementById('missionState'), savedCount: document.getElementById('savedCount'), progressInner: document.getElementById('progressInner'),
     promptBox: document.getElementById('promptBox'), promptText: document.getElementById('promptText'), rescueBtn: document.getElementById('rescueBtn'), mobileRescueBtn: document.getElementById('mobileRescueBtn'),
     quizModal: document.getElementById('quizModal'), questionNum: document.getElementById('questionNum'), leftNum: document.getElementById('leftNum'), leftDen: document.getElementById('leftDen'),
@@ -437,6 +532,13 @@
     animatedLabel: document.getElementById('animatedLabel'), barCaption: document.getElementById('barCaption'), phaseTag: document.getElementById('phaseTag'),
     replayModelBtn: document.getElementById('replayModelBtn'),
     nextModelStepBtn: document.getElementById('nextModelStepBtn'),
+    cheatSolveBtn: document.getElementById('cheatSolveBtn'),
+    rescueVideoOverlay: document.getElementById('rescueVideoOverlay'),
+    firstRescueVideo: document.getElementById('firstRescueVideo'),
+    skipVideoBtn: document.getElementById('skipVideoBtn'),
+    finalThanksVideoOverlay: document.getElementById('finalThanksVideoOverlay'),
+    finalThanksVideo: document.getElementById('finalThanksVideo'),
+    skipFinalVideoBtn: document.getElementById('skipFinalVideoBtn'),
     endingThanks: document.getElementById('endingThanks'), playAgainBtn: document.getElementById('playAgainBtn'), confetti: document.getElementById('confetti')
   };
 
@@ -447,6 +549,8 @@
   let currentQuestion = null;
   let beamTime = 0;
   let endingTime = 0;
+  let ambienceOn = true;
+  let firstRescueVideoPlayed = false;
 
   const keys = {};
   const mobileKeys = {up:false,down:false,left:false,right:false};
@@ -568,6 +672,8 @@
     else if(mode === 'flying') UI.missionState.textContent = 'Find aliens';
     else if(mode === 'quiz') UI.missionState.textContent = 'Answer question';
     else if(mode === 'beam') UI.missionState.textContent = 'Alien rescue';
+    else if(mode === 'video_pause') UI.missionState.textContent = 'First rescue video';
+    else if(mode === 'ending_video') UI.missionState.textContent = 'Aliens thanking Uncle Joe';
     else if(mode.startsWith('ending')) UI.missionState.textContent = 'Mission complete';
   }
 
@@ -579,11 +685,20 @@
   function bindHold(id, prop){ const el=document.getElementById(id); const start=e=>{e.preventDefault(); mobileKeys[prop]=true;}; const stop=e=>{e.preventDefault(); mobileKeys[prop]=false;}; el.addEventListener('pointerdown', start); el.addEventListener('pointerup', stop); el.addEventListener('pointercancel', stop); el.addEventListener('pointerleave', stop); }
   bindHold('upBtn','up'); bindHold('downBtn','down'); bindHold('leftBtn','left'); bindHold('rightBtn','right');
 
-  UI.startBtn.addEventListener('click', ()=>{ UI.startScreen.style.display='none'; mode='opening_walk'; introTime=0; updateUI(); startTone(); });
+  UI.startBtn.addEventListener('click', ()=>{
+    UI.startScreen.style.display='none';
+    mode='opening_walk';
+    introTime=0;
+    updateUI();
+    startTone();
+    startAmbience();
+  });
+  UI.soundBtn.addEventListener('click', toggleAmbience);
   UI.rescueBtn.addEventListener('click', openQuestion); UI.mobileRescueBtn.addEventListener('click', ()=>{ if(mode === 'flying' && currentAlien) openQuestion(); });
   UI.checkBtn.addEventListener('click', checkAnswer);
   UI.answerInput.addEventListener('keydown', e=>{ if(e.key==='Enter') checkAnswer(); });
   UI.tryAgainBtn.addEventListener('click', ()=>{ UI.answerInput.value=''; UI.answerInput.focus(); UI.resultMsg.textContent='Try again. The model can help you.'; UI.resultMsg.className='resultMsg bad'; });
+  UI.cheatSolveBtn.addEventListener('click', cheatSolve);
   UI.replayModelBtn.addEventListener('click', ()=>{
     if(currentQuestion && UI.explainBox.classList.contains('show')){
       startStepByStepModel();
@@ -596,6 +711,10 @@
   });
   UI.saveAlienBtn.addEventListener('click', ()=>{ UI.quizModal.style.display='none'; beginBeam(); });
   UI.playAgainBtn.addEventListener('click', ()=>location.reload());
+  UI.skipVideoBtn.addEventListener('click', closeFirstRescueVideo);
+  UI.firstRescueVideo.addEventListener('ended', closeFirstRescueVideo);
+  UI.skipFinalVideoBtn.addEventListener('click', closeFinalThanksVideo);
+  UI.finalThanksVideo.addEventListener('ended', closeFinalThanksVideo);
 
   function setupExploration(){
     mode = 'flying'; saved = 0; currentAlien = null; ufo.position.set(0,6,0); ufo.rotation.set(0,0,0); ufo.scale.set(1,1,1); uncleJoe.visible = false; pad.visible = false;
@@ -716,6 +835,23 @@
     showAnimatedModel();
   }
 
+  function cheatSolve(){
+    if(!currentQuestion) return;
+
+    const pass = prompt('Teacher password:');
+    if(pass !== '67'){
+      alert('Wrong password.');
+      return;
+    }
+
+    UI.answerInput.value = currentQuestion.answer;
+    showExplanation();
+    UI.resultMsg.textContent = 'Teacher cheat solve used. Correct answer filled in.';
+    UI.resultMsg.className = 'resultMsg good';
+    UI.saveAlienBtn.classList.add('show');
+    successTone();
+  }
+
   function checkAnswer(){
     if(!currentQuestion) return;
     const raw = UI.answerInput.value.trim(); const val = Number(raw); showExplanation();
@@ -726,26 +862,123 @@
     }
   }
 
+  function playFirstRescueVideo(){
+    if(firstRescueVideoPlayed) return;
+    firstRescueVideoPlayed = true;
+    mode = 'video_pause';
+    UI.rescueVideoOverlay.style.display = 'flex';
+    UI.firstRescueVideo.currentTime = 0;
+    UI.firstRescueVideo.volume = 0.85;
+    UI.firstRescueVideo.play().catch(()=>{
+      // If the browser blocks the video, continue the mission.
+      closeFirstRescueVideo();
+    });
+  }
+
+  function closeFirstRescueVideo(){
+    UI.firstRescueVideo.pause();
+    UI.rescueVideoOverlay.style.display = 'none';
+    if(saved < 10){
+      mode = 'flying';
+    }
+    updateUI();
+  }
+
   function beginBeam(){
-    if(!currentAlien) return; mode = 'beam'; beamTime = 0; ufo.userData.beam.visible = true; ufo.userData.beamGlow.intensity = 2.6; currentAlien.userData.marker.visible = false; updateUI(); beamTone();
+    if(!currentAlien) return; mode = 'beam'; beamTime = 0; ufo.userData.beam.visible = true; ufo.userData.beamGlow.intensity = 2.6; currentAlien.userData.marker.visible = false; updateUI(); playBeamSound();
   }
   function completeBeam(){
     if(!currentAlien) return; currentAlien.userData.saved = true; currentAlien.visible = false; saved++; currentAlien = null; ufo.userData.beam.visible = false; ufo.userData.beamGlow.intensity = 0; updateUI();
-    if(saved >= 10) beginEnding(); else mode = 'flying';
+
+    if(saved === 1 && !firstRescueVideoPlayed){
+      playFirstRescueVideo();
+    }else if(saved >= 10){
+      beginEnding();
+    }else{
+      mode = 'flying';
+    }
   }
   function beginEnding(){
     mode = 'ending_land'; endingTime = 0; pad.visible = true; ufo.userData.beam.visible = false; ufo.userData.beamGlow.intensity = 0;
     for(const a of aliens){ a.visible = false; a.userData.marker.visible = false; }
     uncleJoe.visible = false; updateUI();
   }
+  function playFinalThanksVideo(){
+    mode = 'ending_video';
+    UI.finalThanksVideoOverlay.style.display = 'flex';
+    UI.finalThanksVideo.currentTime = 0;
+    UI.finalThanksVideo.volume = 1;
+
+    // Let the ending video be heard clearly.
+    if(UI.spaceAmbience){
+      UI.spaceAmbience.pause();
+    }
+
+    UI.finalThanksVideo.play().catch(()=>{
+      closeFinalThanksVideo();
+    });
+    updateUI();
+  }
+
+  function closeFinalThanksVideo(){
+    UI.finalThanksVideo.pause();
+    UI.finalThanksVideoOverlay.style.display = 'none';
+    mode = 'ending_thanks';
+    UI.endingThanks.style.display = 'flex';
+    confetti();
+    victoryTone();
+    updateUI();
+  }
+
   function showThanks(){
-    mode = 'ending_thanks'; uncleJoe.visible = true; uncleJoe.position.set(0,0,2.8); uncleJoe.rotation.y = Math.PI; for(const a of endingAliens) a.visible = true;
-    UI.endingThanks.style.display = 'flex'; confetti(); victoryTone(); updateUI();
+    uncleJoe.visible = true;
+    uncleJoe.position.set(0,0,2.8);
+    uncleJoe.rotation.y = Math.PI;
+    for(const a of endingAliens) a.visible = true;
+    playFinalThanksVideo();
   }
   function confetti(){
     UI.confetti.innerHTML=''; const colors=['#53e6ff','#9b5cff','#72ff68','#ffe66d','#ff5d7a','#ffffff'];
     for(let i=0;i<90;i++){ const s=document.createElement('span'); s.style.left=Math.random()*100+'vw'; s.style.background=colors[i%colors.length]; s.style.animationDelay=(Math.random()*0.7)+'s'; s.style.transform=`rotate(${Math.random()*360}deg)`; UI.confetti.appendChild(s); }
     setTimeout(()=>UI.confetti.innerHTML='', 2600);
+  }
+
+  function playBeamSound(){
+    if(!UI.beamSound) return;
+    UI.beamSound.volume = 0.75;
+    UI.beamSound.currentTime = 0;
+    UI.beamSound.play().catch(()=>{
+      // Fallback if the browser blocks or cannot load the MP3.
+      beamTone();
+    });
+  }
+
+  function startAmbience(){
+    if(!UI.spaceAmbience) return;
+    UI.spaceAmbience.volume = 0.28;
+    UI.spaceAmbience.loop = true;
+    if(ambienceOn){
+      UI.spaceAmbience.play().then(()=>{
+        UI.soundBtn.textContent = '🔊 Ambience On';
+        UI.soundBtn.classList.remove('off');
+      }).catch(()=>{
+        UI.soundBtn.textContent = '▶ Start Ambience';
+        UI.soundBtn.classList.remove('off');
+      });
+    }
+  }
+
+  function toggleAmbience(){
+    if(!UI.spaceAmbience) return;
+    ambienceOn = !ambienceOn;
+
+    if(ambienceOn){
+      startAmbience();
+    }else{
+      UI.spaceAmbience.pause();
+      UI.soundBtn.textContent = '🔇 Ambience Off';
+      UI.soundBtn.classList.add('off');
+    }
   }
 
   let audioCtx = null;
